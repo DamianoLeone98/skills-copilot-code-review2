@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
   // DOM elements
   const activitiesList = document.getElementById("activities-list");
+  const announcementBanner = document.getElementById("announcement-banner");
   const messageDiv = document.getElementById("message");
   const registrationModal = document.getElementById("registration-modal");
   const modalActivityName = document.getElementById("modal-activity-name");
@@ -40,6 +41,25 @@ document.addEventListener("DOMContentLoaded", () => {
   let searchQuery = "";
   let currentDay = "";
   let currentTimeRange = "";
+
+  async function fetchAnnouncements() {
+    try {
+      const response = await fetch("/announcements");
+      if (!response.ok) {
+        throw new Error("Failed to fetch announcements");
+      }
+
+      const announcements = await response.json();
+      if (announcements.length > 0) {
+        announcementBanner.textContent = announcements
+          .map((announcement) => `📢 ${announcement.message}`)
+          .join(" ");
+        announcementBanner.classList.remove("hidden");
+      }
+    } catch (error) {
+      console.error("Error fetching announcements:", error);
+    }
+  }
 
   // Authentication state
   let currentUser = null;
@@ -865,4 +885,5 @@ document.addEventListener("DOMContentLoaded", () => {
   checkAuthentication();
   initializeFilters();
   fetchActivities();
+  fetchAnnouncements();
 });
